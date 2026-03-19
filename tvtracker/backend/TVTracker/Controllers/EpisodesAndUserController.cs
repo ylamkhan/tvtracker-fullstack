@@ -92,9 +92,9 @@ public class UserController : ControllerBase
 
         var userShows = await query.OrderByDescending(u => u.AddedAt).ToListAsync();
         var episodeIds = userShows.SelectMany(u => u.Show.Seasons.SelectMany(s => s.Episodes).Select(e => e.Id)).ToList();
-        var watchedIds = await _db.WatchedEpisodes
+        var watchedIds = (await _db.WatchedEpisodes
             .Where(w => w.UserId == UserId && episodeIds.Contains(w.EpisodeId))
-            .Select(w => w.EpisodeId).ToHashSetAsync();
+            .Select(w => w.EpisodeId).ToListAsync()).ToHashSet();
 
         return Ok(userShows.Select(u => new UserShowDto
         {

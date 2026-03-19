@@ -1,7 +1,6 @@
 version: '3.9'
 
 services:
-  # PostgreSQL Database
   postgres:
     image: postgres:16-alpine
     container_name: tvtracker-db
@@ -14,13 +13,14 @@ services:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
+      - ./postgres-init:/docker-entrypoint-initdb.d
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 5s
+      test: ["CMD-SHELL", "pg_isready -U postgres -d tvtracker"]
+      interval: 3s
       timeout: 5s
-      retries: 5
+      retries: 20
+      start_period: 15s
 
-  # ASP.NET Core Backend
   backend:
     build:
       context: ./backend/TVTracker
@@ -40,7 +40,6 @@ services:
       postgres:
         condition: service_healthy
 
-  # React Frontend
   frontend:
     build:
       context: ./frontend
