@@ -11,8 +11,32 @@ using TVTracker.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// ── Convert postgresql:// URL → Npgsql format if needed ─────────────────────
+static string ResolveConnectionString(IConfiguration config)
+{
+    // Render injecte DATABASE_URL automatiquement en format postgresql://
+    var dbUrl = Environment.GetEnvironmentVariable("DATABASE_URL")
+             ?? config.GetConnectionString("DefaultConnection")
+             ?? "";
+
+    if (dbUrl.StartsWith("postgresql://") || dbUrl.StartsWith("postgres://"))
+    {
+        var uri = new Uri(dbUrl);
+        var userInfo = uri.UserInfo.Split(':');
+        var user = userInfo[0];
+        var pass = userInfo.Length > 1 ? userInfo[1] : "";
+        var host = uri.Host;
+        var port = uri.Port > 0 ? uri.Port : 5432;
+        var db   = uri.AbsolutePath.TrimStart('/');
+        return $"Host={host};Port={port};Database={db};Username={user};Password={pass};SSL Mode=Require;Trust Server Certificate=true";
+    }
+    return dbUrl;
+}
+
+var connStr = ResolveConnectionString(builder.Configuration);
+
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseNpgsql(connStr));
 
 builder.Services.AddIdentityCore<AppUser>(opt =>
 {
@@ -46,11 +70,25 @@ builder.Services.AddAuthorization();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddControllers();
 
+// ── CORS — accepte localhost + toute URL Render/custom ───────────────────────
+var frontendUrl = Environment.GetEnvironmentVariable("FRONTEND_URL") ?? "";
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowReact", policy =>
-        policy.WithOrigins("http://localhost:3000","http://localhost:5173","http://frontend")
-              .AllowAnyMethod().AllowAnyHeader().AllowCredentials());
+    {
+        var origins = new List<string>
+        {
+            "http://localhost:3000",
+            "http://localhost:5173",
+        };
+        if (!string.IsNullOrEmpty(frontendUrl))
+            origins.Add(frontendUrl);
+
+        policy.WithOrigins(origins.ToArray())
+              .AllowAnyMethod()
+              .AllowAnyHeader()
+              .AllowCredentials();
+    });
 });
 
 builder.Services.AddEndpointsApiExplorer();
@@ -71,14 +109,13 @@ builder.Services.AddSwaggerGen(c =>
 
 var app = builder.Build();
 
-// ── Create tables directly via Npgsql (bypasses EF completely) ──────────────
-var connStr = builder.Configuration.GetConnectionString("DefaultConnection")!;
+// ── Crée toutes les tables via Npgsql pur ────────────────────────────────────
 await CreateTablesAsync(connStr);
 
-// ── Seed shows via EF ────────────────────────────────────────────────────────
+// ── Seed 10 séries via EF ────────────────────────────────────────────────────
 using (var scope = app.Services.CreateScope())
 {
-    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    var db  = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
     var log = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
     try
     {
@@ -112,7 +149,7 @@ app.UseAuthorization();
 app.MapControllers();
 app.Run();
 
-// ── Pure Npgsql — no EF, no migrations, creates all tables if not exist ──────
+// ── Crée toutes les tables si elles n'existent pas ───────────────────────────
 static async Task CreateTablesAsync(string connectionString)
 {
     await using var conn = new NpgsqlConnection(connectionString);
