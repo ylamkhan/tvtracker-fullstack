@@ -1,8 +1,14 @@
 import axios from 'axios';
 import type { AuthResponse, PagedResult, Show, ShowDetail, UserShow, UserStats, ShowReview } from '../types';
 
+// En production (Render), on appelle directement l'URL du backend
+// En développement, le proxy Vite redirige /api vers localhost:5000
+const BASE_URL = import.meta.env.VITE_API_URL
+  ? `${import.meta.env.VITE_API_URL}/api`
+  : '/api';
+
 const api = axios.create({
-  baseURL: '/api',
+  baseURL: BASE_URL,
   headers: { 'Content-Type': 'application/json' },
 });
 
