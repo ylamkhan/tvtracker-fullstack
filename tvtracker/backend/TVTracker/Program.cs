@@ -24,7 +24,7 @@ static string ResolveConnectionString(IConfiguration config)
         var user = uri.UserInfo.Split(':')[0];
         var pass = uri.UserInfo.Contains(':') ? uri.UserInfo[(uri.UserInfo.IndexOf(':') + 1)..] : "";
         var host = uri.Host;
-        var port = uri.Port > 0 ? uri.Port : 5432;
+        var port = uri.Port > 0 ? uri.Port : 5431;
         var db   = uri.AbsolutePath.TrimStart('/');
         return $"Host={host};Port={port};Database={db};Username={user};Password={pass};SSL Mode=Require;Trust Server Certificate=true";
     }
