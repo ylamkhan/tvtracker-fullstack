@@ -1,6 +1,6 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-:root {
+/* :root {
   --bg-primary: #0d0d1a;
   --bg-secondary: #12122a;
   --bg-card: #1a1a2e;
@@ -24,7 +24,45 @@
   --radius-sm: 8px;
   --shadow: 0 4px 24px rgba(0,0,0,0.4);
   --shadow-lg: 0 8px 48px rgba(0,0,0,0.6);
+} */
+
+:root {
+  /* Fonds : Noir profond avec une légère touche de rouge (Deep Charcoal/Burgundy) */
+  --bg-primary: #0f0a0a;      /* Fond principal presque noir */
+  --bg-secondary: #1a0f0f;    /* Légèrement plus clair */
+  --bg-card: #251616;         /* Couleur des cartes */
+  --bg-card-hover: #2d1b1b;   /* Effet de survol */
+  --bg-surface: #361f1f;      /* Surfaces plus hautes */
+  
+  /* Bordures : Gris-rouge foncé */
+  --border: #3d2424;
+  --border-light: #523030;
+
+  /* Texte : Blanc cassé et gris chaud pour rester lisible */
+  --text-primary: #f5eaea;
+  --text-secondary: #c2a8a8;
+  --text-muted: #856b6b;
+
+  /* L'ACCENT : LE ROUGE (Remplace le violet/bleu) */
+  --accent: #e11d48;          /* Rouge vif (Rose-Red) */
+  --accent-light: #fb7185;    /* Rouge clair / Corail */
+  --accent-glow: rgba(225, 29, 72, 0.3); /* Lueur rouge */
+
+  /* Autres couleurs adaptées au thème chaud */
+  --gold: #f59e0b;
+  --green: #10b981;
+  --red: #ff4d4d;
+  --blue: #60a5fa;
+
+  /* Fonts & Style */
+  --font-display: 'Bebas Neue', sans-serif;
+  --font-body: 'DM Sans', sans-serif;
+  --radius: 12px;
+  --radius-sm: 8px;
+  --shadow: 0 4px 24px rgba(0,0,0,0.6);
+  --shadow-lg: 0 8px 48px rgba(0,0,0,0.8);
 }
+
 
 html { scroll-behavior: smooth; }
 

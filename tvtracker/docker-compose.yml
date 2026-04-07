@@ -10,7 +10,7 @@ services:
       POSTGRES_PASSWORD: tvtracker123
       POSTGRES_DB: tvtracker
     ports:
-      - "5431:5431"
+      - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
       - ./postgres-init:/docker-entrypoint-initdb.d
@@ -32,7 +32,7 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:5000
-      - ConnectionStrings__DefaultConnection=Host=postgres;Port=5431;Database=tvtracker;Username=postgres;Password=tvtracker123
+      - ConnectionStrings__DefaultConnection=Host=postgres;Port=5432;Database=tvtracker;Username=postgres;Password=tvtracker123
       - JwtSettings__SecretKey=super-secret-jwt-key-at-least-32-characters-long-for-production!
       - JwtSettings__Issuer=tvtracker
       - JwtSettings__Audience=tvtracker-users
