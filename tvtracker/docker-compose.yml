@@ -22,70 +22,35 @@ services:
       start_period: 15s
 
   backend:
-    build:
-      context: ./backend/TVTracker
-      dockerfile: Dockerfile
+    image: mcr.microsoft.com/dotnet/sdk:8.0
     container_name: tvtracker-api
-    restart: unless-stopped
+    working_dir: /app
+    volumes:
+      - ./backend/TVTracker:/app
+    command: >
+      bash -c "dotnet restore &&
+              dotnet watch run --urls=http://0.0.0.0:5000"
     ports:
       - "5000:5000"
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=http://+:5000
       - ConnectionStrings__DefaultConnection=Host=postgres;Port=5432;Database=tvtracker;Username=postgres;Password=tvtracker123
-      - JwtSettings__SecretKey=super-secret-jwt-key-at-least-32-characters-long-for-production!
-      - JwtSettings__Issuer=tvtracker
-      - JwtSettings__Audience=tvtracker-users
     depends_on:
       postgres:
         condition: service_healthy
 
   frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
+    image: node:20
     container_name: tvtracker-ui
-    restart: unless-stopped
+    working_dir: /app
+    volumes:
+      - ./frontend:/app   # 🔥 sync code
+    command: >
+      bash -c "npm install && npm run dev -- --host"
     ports:
-      - "3000:80"
+      - "3000:5173"   # Vite default
     depends_on:
       - backend
 
 volumes:
   pgdata:
-
-
-
-# version: '3.9'
-
-# services:
-#   backend:
-#     build:
-#       context: ./backend/TVTracker
-#       dockerfile: Dockerfile
-#     container_name: tvtracker-api
-#     restart: unless-stopped
-#     ports:
-#       - "5000:5000"
-#     environment:
-#       - ASPNETCORE_ENVIRONMENT=Development
-#       - ASPNETCORE_URLS=http://+:5000
-
-#       # 🔥 USE RENDER DATABASE HERE
-#       - ConnectionStrings__DefaultConnection=Host=dpg-d6t11b7afjfc73fk2md0-a.oregon-postgres.render.com;Port=5432;Database=tvtracker_db;Username=tvtracker_db_user;Password=0GX11V1cejSr0JgFlsepT9JO5dBszLWS;SSL Mode=Require;Trust Server Certificate=true
-
-#       - JwtSettings__SecretKey=super-secret-jwt-key-at-least-32-characters-long-for-production!
-#       - JwtSettings__Issuer=tvtracker
-#       - JwtSettings__Audience=tvtracker-users
-
-#   frontend:
-#     build:
-#       context: ./frontend
-#       dockerfile: Dockerfile
-#     container_name: tvtracker-ui
-#     restart: unless-stopped
-#     ports:
-#       - "3000:80"
-#     depends_on:
-#       - backend
-

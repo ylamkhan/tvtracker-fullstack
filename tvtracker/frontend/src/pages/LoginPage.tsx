@@ -62,7 +62,7 @@ function AuthLayout({ title, subtitle, children }: { title: string; subtitle: st
     <div style={{
       minHeight: '100vh', background: 'var(--bg-primary)',
       display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24,
-      backgroundImage: 'radial-gradient(ellipse at 20% 50%, rgba(124,58,237,0.08) 0%, transparent 60%)',
+      backgroundImage: 'radial-gradient(at 80% 50%, #3d0101 0%, transparent 60%)',
     }}>
       <div style={{ width: '100%', maxWidth: 420 }}>
         <div style={{ textAlign: 'center', marginBottom: 40 }}>

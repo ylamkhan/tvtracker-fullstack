@@ -20,7 +20,7 @@ export default function HomePage() {
     <div>
       {/* Hero */}
       <section style={{
-        background: 'linear-gradient(135deg, #0d0d1a 0%, #12082a 50%, #0d0d1a 100%)',
+        background: 'linear-gradient(135deg, rgb(0 0 0) 0%, rgb(49 2 6) 50%, #000000 100%)',
         padding: '80px 24px 64px',
         position: 'relative',
         overflow: 'hidden',
@@ -31,10 +31,10 @@ export default function HomePage() {
           backgroundImage: 'linear-gradient(var(--border) 1px, transparent 1px), linear-gradient(90deg, var(--border) 1px, transparent 1px)',
           backgroundSize: '40px 40px',
         }} />
-        <div style={{ position: 'absolute', top: -100, right: -100, width: 400, height: 400, background: 'radial-gradient(circle, rgba(124,58,237,0.15) 0%, transparent 70%)', borderRadius: '50%' }} />
+        <div style={{ position: 'absolute', top: -100, right: -100, width: 400, height: 400, background: 'radial-gradient(circle, rgba(225,29,72,0.2) 0%, transparent 70%)', borderRadius: '50%' }} />
 
         <div className="container" style={{ position: 'relative', textAlign: 'center' }}>
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(124,58,237,0.1)', border: '1px solid rgba(124,58,237,0.3)', borderRadius: 20, padding: '6px 16px', marginBottom: 24, fontSize: 13, color: 'var(--accent-light)' }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgb(143 0 31)', border: '1px solid rgb(114 112 115)', borderRadius: 20, padding: '6px 16px', marginBottom: 24, fontSize: 13, color: 'var(--accent-light)' }}>
             <Play size={13} fill="currentColor" />
             Track every episode. Rate every moment.
           </div>
