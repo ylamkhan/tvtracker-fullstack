@@ -9,11 +9,11 @@ export default function HomePage() {
   const { isAuthenticated, user } = useAuthStore();
   const { data: topShows } = useQuery({
     queryKey: ['shows', 'top'],
-    queryFn: () => showsApi.getAll({ pageSize: 8 }),
+    queryFn: () => showsApi.getAll({ pageSize: 12 }),
   });
   const { data: ongoingShows } = useQuery({
     queryKey: ['shows', 'ongoing'],
-    queryFn: () => showsApi.getAll({ status: 'Ongoing', pageSize: 4 }),
+    queryFn: () => showsApi.getAll({ status: 'Ongoing', pageSize: 6 }),
   });
 
   return (
