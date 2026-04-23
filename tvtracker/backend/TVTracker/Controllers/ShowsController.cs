@@ -157,29 +157,48 @@ public class ShowsController : ControllerBase
     [HttpPost("{id}/track")]
     public async Task<ActionResult<UserShowDto>> TrackShow(int id, [FromBody] UpdateUserShowDto dto)
     {
-        var show = await _db.Shows.Include(s => s.Seasons).ThenInclude(s => s.Episodes)
+        if (UserId == null) return Unauthorized();
+    
+        var show = await _db.Shows
+            .Include(s => s.Seasons)
+            .ThenInclude(s => s.Episodes)
             .FirstOrDefaultAsync(s => s.Id == id);
+    
         if (show == null) return NotFound();
-
-        var userShow = await _db.UserShows.FirstOrDefaultAsync(u => u.ShowId == id && u.UserId == UserId);
+    
+        var userShow = await _db.UserShows
+            .FirstOrDefaultAsync(u => u.ShowId == id && u.UserId == UserId);
+    
         if (userShow == null)
         {
-            userShow = new UserShow { UserId = UserId!, ShowId = id };
+            userShow = new UserShow { UserId = UserId, ShowId = id };
             _db.UserShows.Add(userShow);
         }
-
+    
         if (dto.Status != null && Enum.TryParse<WatchStatus>(dto.Status, out var status))
             userShow.Status = status;
-        if (dto.UserRating.HasValue) userShow.UserRating = dto.UserRating;
-        if (dto.IsFavorite.HasValue) userShow.IsFavorite = dto.IsFavorite.Value;
-        if (dto.Notes != null) userShow.Notes = dto.Notes;
-
+    
+        if (dto.UserRating.HasValue)
+            userShow.UserRating = dto.UserRating;
+    
+        if (dto.IsFavorite.HasValue)
+            userShow.IsFavorite = dto.IsFavorite.Value;
+    
+        if (dto.Notes != null)
+            userShow.Notes = dto.Notes;
+    
         await _db.SaveChangesAsync();
-
+    
+        // ✅ FIXED PART
+        var episodeIds = show.Seasons
+            .SelectMany(s => s.Episodes)
+            .Select(e => e.Id)
+            .ToList();
+    
         var watched = await _db.WatchedEpisodes.CountAsync(w =>
             w.UserId == UserId &&
-            show.Seasons.SelectMany(s => s.Episodes).Select(e => e.Id).Contains(w.EpisodeId));
-
+            episodeIds.Contains(w.EpisodeId));
+    
         return Ok(new UserShowDto
         {
             Id = userShow.Id,
